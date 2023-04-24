@@ -1,0 +1,126 @@
+<div class="container">
+  <div class="header">
+    <h1>Practicas 2 - 3 Algoritmos de búsqueda</h1>
+  </div>
+  <div *ngIf="!file" class="custom-input-file col-md-6 col-sm-6 col-xs-6">
+    <input type="file" id="fichero-tarifas" class="input-file" (change)="loadFile($event)" >
+    Subir Archivo...
+  </div>
+    <div class="lab-container">
+        <div *ngFor="let fragment of map" [ngClass]="{}">
+            <button class="fragment"
+                [ngClass]="{'black': (!fragment.isVisible),
+                            'road': (fragment.terrain == 1), 
+                            'wall': (fragment.terrain == 0),
+                            'water': (fragment.terrain == 2),
+                            'sand': (fragment.terrain == 3),
+                            'forest': (fragment.terrain == 4),
+                            'visited': (fragment.visited),
+                            'occupied': (fragment.isOccupied),
+                            'desicion': (fragment.needsDesicion)
+                           }
+                             ">
+                             <svg (click)="toggleVisibility(fragment)" 
+                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                              </svg>
+                              <svg (click)="changeTerrain(fragment)" 
+                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                              </svg>
+                              <svg (click)="getFragmentInfo(fragment)"
+                               xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-octagon" viewBox="0 0 16 16">
+                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z"/>
+                                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                              </svg>
+                              <br>
+                             <p *ngIf="fragment.initial">I,</p>
+                             <p *ngIf="fragment.final">F,</p>
+                             <p *ngIf="fragment.visited">V,</p>
+                             <p *ngIf="fragment.isOccupied">X,</p>
+                             <p *ngIf="fragment.needsDesicion">O</p>
+                             <p *ngIf="fragment.cost != 0">{{fragment.cost}}</p>
+                             <p *ngIf="!fragment.isVisible" class="tag">{{fragment.col}}{{fragment.row + 1}}</p>
+            </button>
+        </div>
+    </div>
+    <div class="menu">
+      <div class="left-side">
+        <h3>Breadth-first search and Deep-first search</h3>
+      Start:
+      <input type="text"  [(ngModel)]="initialCol" placeholder="Column">
+      <input type="text"  [(ngModel)]="initialRow" placeholder="Row">
+      <br>
+      End:
+      <input type="text" [(ngModel)]="finalCol" placeholder="Column">
+      <input type="text" [(ngModel)]="finalRow" placeholder="Row">
+      <br>
+      Priority order
+      <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let movie of movies" cdkDrag>{{movie}}</div>
+      </div>
+      node by node <mat-slide-toggle [(ngModel)]="stepByStep">step by step</mat-slide-toggle>
+      <br>
+      Breadth-first search <mat-slide-toggle [(ngModel)]="deepSearch">Deep-first search</mat-slide-toggle>
+      <button type="button" (click)="solve()">Solve</button>
+    </div>
+    <div class="right-side">
+      <h3>Finding optimal paths using A*</h3>
+      <table class="table table-striped">
+        <th></th>
+        <tr>
+          <td>Terrain</td>
+          <td (click)="changeAgent('monkey')">Monkey <a *ngIf="agent == 'monkey'">*</a></td>
+          <td (click)="changeAgent('octopus')">Octopus <a *ngIf="agent == 'octopus'">*</a></td>
+        </tr>
+        <tr>
+          <td class="mountain">mountain</td>
+          <td><input [(ngModel)]="monkey['0']"></td>
+          <td><input [(ngModel)]="octopus['0']"></td>
+        </tr>
+        <tr>
+          <td class="road">earth</td>
+          <td><input [(ngModel)]="monkey['1']"></td>
+          <td><input [(ngModel)]="octopus['1']"></td>
+        </tr>
+        <tr>
+          <td class="water">water</td>
+          <td><input [(ngModel)]="monkey['2']" ></td>
+          <td><input [(ngModel)]="octopus['2']"></td>
+        </tr>
+        <tr>
+          <td class="sand">sand</td>
+          <td><input [(ngModel)]="monkey['3']"></td>
+          <td><input [(ngModel)]="octopus['3']"></td>
+        </tr>
+        <tr>
+          <td class="forest">forest</td>
+          <td><input [(ngModel)]="monkey['4']"></td>
+          <td><input [(ngModel)]="octopus['4']"></td>
+        </tr>
+      </table>
+      <button (click)="solveA()">Solve A*</button>
+      <button (click)="step()">step</button>
+      <button (click)="showAllMap()">show all map</button>
+      <button (click)="hideAllMap()">hide all map</button>
+      <div *ngIf="solution">
+        <h3>Solution:</h3>  
+        <ul *ngFor="let step of solution">
+          <li>{{alphabeth[step.col]}} {{step.row + 1}}</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+    <div class="tree">
+      <h3>Solution tree</h3>
+      <table>
+        <th></th>
+        <tr *ngFor="let branch of conjuntoAbierto">
+          <td *ngFor="let step of branch.parents">{{alphabeth[step.col]}}{{step.row + 1}} -> <br> cost: {{step.cost}} <br>distance: {{step.distance}} <br> total: {{step.total}}</td>
+          <td>{{alphabeth[branch.col]}}{{branch.row + 1}} <br> cost: {{branch.cost}} <br>distance: {{branch.distance}} <br> total: {{branch.total}}</td>
+        </tr>
+      </table>
+    </div>
+</div>
